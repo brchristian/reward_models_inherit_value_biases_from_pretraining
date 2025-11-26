@@ -1,0 +1,5 @@
+"X","model_id","Category","checkpoint","base_model","sum_value","data_size","data_source","method","prompt"
+NA,"R-Lla-3B","Agency",1,"Llama",678,85,"skywork","GRM","Greatest"
+NA,"R-Lla-3B","Communion",1,"Llama",725,85,"skywork","GRM","Greatest"
+NA,"R-Gem-2B","Agency",1,"Gemma",720.5,85,"skywork","GRM","Greatest"
+NA,"R-Gem-2B","Communion",1,"Gemma",647.5,85,"skywork","GRM","Greatest"
