@@ -1,0 +1,137 @@
+"""
+Generate Figure 3: Lollipop plot of MWLR scores for "Freedom" vs "Love"
+across Llama x Gemma 2 model pairs.
+"""
+
+import os
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+
+def compute_mwlr(logprob_p1, logprob_p2):
+    """
+    Compute mixture-weighted log ratio (MWLR):
+      MWLR(tok) = (1/2)(p1(tok) + p2(tok)) * (log p1(tok) - log p2(tok))
+    Inputs are already in log space.
+    """
+    p1 = np.exp(logprob_p1)
+    p2 = np.exp(logprob_p2)
+    mixture_weight = 0.5 * (p1 + p2)
+    log_ratio = logprob_p1 - logprob_p2
+    return mixture_weight * log_ratio
+
+
+def compute_all_mwlr_comparisons(merged_df, target_tokens=('Freedom', 'Love')):
+    """Compute MWLR scores for all Llama x Gemma model pairs and target tokens."""
+    all_columns = merged_df.columns.tolist()
+    llama_models = [c for c in all_columns if c.startswith('meta-llama/')]
+    gemma_models = [c for c in all_columns if c.startswith('google/')]
+
+    results = []
+    for llama_model in llama_models:
+        for gemma_model in gemma_models:
+            row = {'llama_model': llama_model, 'gemma_model': gemma_model}
+            mwlr_scores = compute_mwlr(
+                merged_df[llama_model].values,
+                merged_df[gemma_model].values,
+            )
+            for token in target_tokens:
+                mask = merged_df['token_decoded'] == token
+                row[f'{token.lower()}_mwlr'] = mwlr_scores[mask].mean() if mask.any() else np.nan
+            results.append(row)
+
+    return pd.DataFrame(results)
+
+
+def create_lollipop_plot(df, output_file, figsize=None):
+    """Create simplified lollipop plot (Gemma 2 models only)."""
+    df = df[df['gemma_model'].str.contains('gemma-2-')].copy().reset_index(drop=True)
+
+    # Shorten model names
+    df['llama_short'] = df['llama_model'].str.replace('meta-llama/', '').str.replace('Meta-', '')
+    df['gemma_short'] = df['gemma_model'].str.replace('google/', '')
+
+    # Sort by version then size (descending)
+    df['llama_version'] = df['llama_short'].str.split('-').str[1].astype(float)
+    df['gemma_version'] = df['gemma_short'].str.split('-').str[1].astype(float)
+    df['llama_size'] = df['llama_short'].str.split('-').str[2].str.replace('b', '').str.replace('B', '').astype(int)
+    df['gemma_size'] = df['gemma_short'].str.split('-').str[2].str.replace('b', '').str.replace('B', '').astype(int)
+    df = df.sort_values(
+        ['llama_version', 'llama_size', 'gemma_version', 'gemma_size']
+    ).iloc[::-1].reset_index(drop=True)
+
+    # Build y-axis labels: "G2-2b  ->  L3.1-70B"
+    df['llama_label'] = 'L' + df['llama_short'].str.replace(
+        'Llama-3-', '3.0-'
+    ).str.replace('Llama-', '').str.replace('-Instruct', '').str.replace('B', 'b')
+    df['gemma_label'] = 'G' + df['gemma_short'].str.replace('gemma-', '').str.replace('-it', '')
+
+    max_gemma_len = df['gemma_label'].str.len().max()
+    max_llama_len = df['llama_label'].str.len().max()
+    labels = [
+        f"{row['gemma_label']:<{max_gemma_len}}  \u2192  {row['llama_label']:<{max_llama_len}} "
+        for _, row in df.iterrows()
+    ]
+
+    if figsize is None:
+        figsize = (8, max(1, len(df) * 0.3))
+
+    fig, ax = plt.subplots(figsize=figsize)
+    y_positions = np.arange(len(df))
+
+    # Connecting lines
+    for i, (_, row) in enumerate(df.iterrows()):
+        ax.plot(
+            [row['love_mwlr'] + 0.05, row['freedom_mwlr'] - 0.05],
+            [i, i],
+            color='gray', linewidth=1.5, alpha=0.5, zorder=1,
+        )
+
+    # Scatter points
+    ax.scatter(df['love_mwlr'], y_positions,
+               s=80, facecolors='none', edgecolors='#D62728',
+               linewidths=2, label='Love', zorder=2)
+    ax.scatter(df['freedom_mwlr'], y_positions,
+               s=80, facecolors='none', edgecolors='#1F77B4',
+               linewidths=2, label='Freedom', zorder=2)
+
+    ax.axvline(x=0, color='gray', linestyle='-', linewidth=0.8, alpha=0.3)
+    ax.set_yticks(y_positions)
+    ax.set_yticklabels(labels, fontsize=16, fontfamily='monospace')
+    ax.tick_params(axis='x', labelsize=16)
+    ax.legend(loc='best', fontsize=16, frameon=True,
+              prop={'size': 16, 'weight': 'bold'})
+    ax.grid(axis='x', alpha=0.25, linestyle='--')
+    ax.set_axisbelow(True)
+
+    plt.tight_layout()
+    plt.savefig(output_file, dpi=300, bbox_inches='tight')
+    print(f"Saved {output_file}")
+
+
+def main():
+    repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    llama_file = os.path.join(repo_root, 'data', 'logprobs', 'greatest-llama-no-dropout.csv')
+    gemma_file = os.path.join(repo_root, 'data', 'logprobs', 'greatest-gemma-no-dropout.csv')
+    output_file = os.path.join(repo_root, 'figures', 'output', 'fig3_lollipop.pdf')
+
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
+
+    print("Loading data...")
+    llama_df = pd.read_csv(llama_file)
+    gemma_df = pd.read_csv(gemma_file)
+
+    print("Merging on common tokens...")
+    merged_df = pd.merge(llama_df, gemma_df, on='token_decoded', how='inner',
+                         suffixes=('_llama', '_gemma'))
+
+    print("Computing MWLR scores...")
+    results_df = compute_all_mwlr_comparisons(merged_df)
+
+    print("Creating lollipop plot...")
+    create_lollipop_plot(results_df, output_file)
+
+
+if __name__ == "__main__":
+    main()
