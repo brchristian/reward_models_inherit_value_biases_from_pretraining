@@ -1,3 +1,5 @@
+pdf(NULL)
+
 library(jsonlite)
 library(fuzzyjoin)
 library(dplyr)
@@ -55,7 +57,7 @@ rank_results = rm_data_cont %>%
   summarise(sum_value = median(rank))
 
 
-# figure 3a
+# figure 4a — training checkpoints
 rank_results %>%
   ggplot(aes(x = checkpoint, y = sum_value, color = base_model)) +
   geom_line() +
@@ -69,7 +71,8 @@ rank_results %>%
         panel.spacing = unit(0.5, "lines"),
         panel.grid = element_blank(),
         legend.position = "none") +
-  labs(x = "Checkpoint", y = paste0("Median rank (Big 2) \n #0 = best, #", length(unique(rm_data_cont$token_decoded)), " = worst"))
+  labs(x = "Checkpoint", y = paste0("Median rank (Big Two) \n #1 = best, #", length(unique(rm_data_cont$token_decoded)), " = worst"))
+ggsave("figures/output/fig4a_training_checkpoints.pdf", width = 6, height = 4)
 
 
 #### ablations ####
@@ -133,7 +136,7 @@ rank_results %>%
         axis.text.x = element_text(angle = 90, hjust = 1),
         panel.grid = element_blank(),
         legend.position = "none") +
-  labs(x = "Data size", y = paste0("Median rank (Big 2) \n #0 = best, #1365 = worst"))
+  labs(x = "Data size", y = paste0("Median rank (Big Two) \n #1 = best, #1365 = worst"))
 
 # equidistant points on x axis
 rank_results %>%
@@ -156,5 +159,5 @@ rank_results %>%
         axis.text.x = element_text(angle = 90, hjust = 1),
         panel.grid = element_blank(),
         legend.position = "none") +
-  labs(x = "Data size", y = paste0("Median rank (Big 2) \n #0 = best, #1365 = worst")) 
-
+  labs(x = "Data size", y = paste0("Median rank (Big Two) \n #1 = best, #1365 = worst"))
+ggsave("figures/output/fig4b_ablations.pdf", width = 6, height = 4)

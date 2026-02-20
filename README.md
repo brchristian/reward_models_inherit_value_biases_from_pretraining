@@ -71,21 +71,25 @@ Produces in `figures/output/`:
 - `figA1a_big2.pdf` — Figure A1(a) (Big Two, individual models + SD)
 - `figA1b_mfd.pdf` — Figure A1(b) (MFD, individual models + SD)
 
-### Figure 4 — Training checkpoints and ablation
-
-```bash
-Rscript figures/generate_figure_4.R
-```
-
-Requires the parquet checkpoint data in `data/reward_model_training/`.
-
-### Base-model log-probability comparison
+### Figure 2 — Base-model log-probability comparison
 
 ```bash
 python figures/logprob_model_comparison.py
 ```
 
-Requires GPU and HuggingFace access to download Gemma 2 2B and Llama 3.2 3B. Outputs PNG plots to `figures/output/`.
+Requires GPU and HuggingFace access to download Gemma 2 2B and Llama 3.2 3B. Produces in `figures/output/`:
+- `big2_logprob_rank_gemma_vs_llamma_pretrained.png` — Figure 2b
+- `big2_logprob_rank_gemma_vs_llamma_instruct.png` — Figure 2a
+
+### Figure 4 — RM training checkpoints and ablation
+
+```bash
+Rscript figures/generate_figure_4.R
+```
+
+Requires the parquet checkpoint data in `data/reward_model_training/`. Produces in `figures/output/`:
+- `fig4a_training_checkpoints.pdf` — Figure 4(a) (median rank over training steps)
+- `fig4b_ablations.pdf` — Figure 4(b) (data source and quantity ablations)
 
 ## Data Provenance
 
