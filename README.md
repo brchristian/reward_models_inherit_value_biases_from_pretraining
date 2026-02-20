@@ -20,7 +20,7 @@ data/
     └── rank_results_*.csv              Ablation results at various data sizes
 
 figures/
-├── generate_figure_1.R         Off-the-shelf RM comparison (Big Two & MFD)
+├── generate_figure_1_and_A1.R         Off-the-shelf RM comparison (Big Two & MFD)
 ├── generate_figure_4.R         Training checkpoint & ablation analysis
 ├── logprob_model_comparison.py Base-model log-probability comparison
 └── output/                     Generated PDFs and PNGs
@@ -30,7 +30,7 @@ figures/
 
 ### R
 
-Used by `generate_figure_1.R` and `generate_figure_4.R`.
+Used by `generate_figure_1_and_A1.R` and `generate_figure_4.R`.
 
 ```r
 install.packages(c(
@@ -59,15 +59,17 @@ statsmodels
 
 All scripts assume the working directory is the repository root.
 
-### Figure 1 — Off-the-shelf reward model rankings
+### Figure 1 — Off-the-shelf reward model rankings (Big Two & MFD)
 
 ```bash
-Rscript figures/generate_figure_1.R
+Rscript figures/generate_figure_1_and_A1.R
 ```
 
-Produces four PDFs in `figures/output/`:
-- `fig1a_big2_main.pdf` / `fig1a_big2_supplement.pdf`
-- `fig1b_mfd_main.pdf` / `fig1b_mfd_supplement.pdf`
+Produces in `figures/output/`:
+- `fig1a_big2.pdf` — Figure 1(a) (Big Two, mean + SE)
+- `fig1b_mfd.pdf` — Figure 1(b) (MFD, mean + SE)
+- `figA1a_big2.pdf` — Figure A1(a) (Big Two, individual models + SD)
+- `figA1b_mfd.pdf` — Figure A1(b) (MFD, individual models + SD)
 
 ### Figure 4 — Training checkpoints and ablation
 

@@ -1,3 +1,5 @@
+pdf(NULL)
+
 library(tidyverse)
 library(tidytext)
 library(dplyr)
@@ -139,7 +141,7 @@ rank_results %>%
         legend.position = "none",
         text = element_text(family = "Times New Roman")) +
   labs(x = "", y = paste0("Median rank (Big Two) \n #1 = best, #", length(unique(rm_data_cont$token_decoded)), " = worst"))
-ggsave("figures/output/fig1a_big2_main.pdf", width = 6, height = 4)
+ggsave("figures/output/fig1a_big2.pdf", width = 6, height = 4)
 
 # figure for supplement
 rank_results %>%
@@ -163,7 +165,7 @@ rank_results %>%
         legend.position = "none",
         text = element_text(family = "Times New Roman")) +
   labs(x = "", y = paste0("Median rank (Big Two) \n #1 = best, #", length(unique(rm_data_cont$token_decoded)), " = worst"))
-ggsave("figures/output/fig1a_big2_supplement.pdf", width = 6, height = 4)
+ggsave("figures/output/figA1a_big2.pdf", width = 6, height = 4)
 
 
 
@@ -258,7 +260,7 @@ rank_results %>%
         legend.position = "none",
         text = element_text(family = "Times New Roman")) +
   labs(x = "", y = paste0("Median rank (MFD2) \n #1 = best, #", length(unique(rm_data_MFD_20$token_decoded)), " = worst"))
-ggsave("figures/output/fig1b_mfd_main.pdf", width = 10, height = 4)
+ggsave("figures/output/fig1b_mfd.pdf", width = 10, height = 4)
 
 # stats in main text
 summary(lme(sum_value ~ base_model*MFD_category*prompt_framing, random = ~1|model_id, data = rank_results))
@@ -284,4 +286,4 @@ rank_results %>%
         panel.grid = element_blank(),
         legend.position = "none") +
   labs(x = "", y = paste0("Median rank (MFD2) \n #1 = best, #", length(unique(rm_data_MFD_20$token_decoded)), " = worst"))
-ggsave("figures/output/fig1b_mfd_supplement.pdf", width = 10, height = 4)
+ggsave("figures/output/figA1b_mfd.pdf", width = 10, height = 4)
