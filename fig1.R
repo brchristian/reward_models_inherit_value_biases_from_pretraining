@@ -13,7 +13,7 @@ base_model_colors = c("Gemma" = "#DB4437","Llama" = "#0064E0")
 
 #### Big Two analysis ####
 rm_data = list.files("rm og/dict_big2_nouns", pattern = "\\.csv$", full.names = TRUE) %>%
-  map_dfr(~read.csv(.x) %>% 
+  map_dfr(~read.csv(.x) %>%
             mutate(model_name = str_remove(tools::file_path_sans_ext(basename(.x)), "^big2_rewards_"))) %>%
   mutate(model_id=case_when(model_name=="Ray2333_GRM-gemma2-2B-rewardmodel-ft" ~ "R-Gem-2B",
                             model_name=="Ray2333_GRM-Llama3.2-3B-rewardmodel-ft"  ~ "R-Lla-3B",
@@ -50,7 +50,7 @@ rm_data_cont = inner_join(rm_data,
   group_by(model_id, token_decoded) %>%
   distinct() %>%   # keep one row per token
   group_by(model_id,prompt) %>%
-  mutate(rank = rank(-score)) 
+  mutate(rank = rank(-score))
 
 rank_results = rm_data_cont %>%
   group_by(model_id, Category, base_model, prompt, prompt_framing) %>%
@@ -78,16 +78,16 @@ rank_results %>%
   ggplot(aes(x = base_model, y = sum_value, color = base_model)) +
   geom_violin() +
   geom_point(alpha = .25, aes(y= sum_value, group=model_id, color=base_model), data = rank_results %>%
-               group_by(model_id, base_model,prompt_framing,Category)%>% summarize(sum_value = mean(sum_value))) + 
+               group_by(model_id, base_model,prompt_framing,Category)%>% summarize(sum_value = mean(sum_value))) +
   geom_errorbar(alpha = .25, width = .1, aes(y= sum_value, ymax = sum_value+se, ymin=sum_value-se, group=model_id, color=base_model), data = rank_results %>%
-                  group_by(model_id, base_model,prompt_framing,Category)%>% summarize(se = sd(sum_value)/sqrt(n()), sum_value = mean(sum_value))) + 
+                  group_by(model_id, base_model,prompt_framing,Category)%>% summarize(se = sd(sum_value)/sqrt(n()), sum_value = mean(sum_value))) +
   stat_summary(fun = mean, geom = "point", shape = 18, size = 2, color = "black") +
   stat_summary(fun = mean, aes(group=(Category)), size = .1, linetype="dotted", geom = "line", color="black") +
-  stat_summary(fun.data = mean_se,  geom = "errorbar",size=.5,width = .1, color = "black") + 
+  stat_summary(fun.data = mean_se,  geom = "errorbar",size=.5,width = .1, color = "black") +
   scale_color_manual(values = base_model_colors) +
   theme(legend.position = "none") +
   scale_y_reverse() +
-  facet_grid(~prompt_framing~Category,scales="free") + 
+  facet_grid(~prompt_framing~Category,scales="free") +
   theme_minimal() +
   theme(panel.border = element_rect(color = "black", fill = NA, linewidth = .5),
         strip.text = element_text(color = "black", margin = margin(10, 5, 10, 5)),  # Fixed this line
@@ -96,7 +96,7 @@ rank_results %>%
         panel.grid = element_blank(),
         legend.position = "none",
         text = element_text(family = "Times New Roman")) +
-  labs(x = "", y = paste0("Median rank (Big 2) \n #0 = best, #", length(unique(rm_data_cont$token_decoded)), " = worst")) 
+  labs(x = "", y = paste0("Median rank (Big 2) \n #0 = best, #", length(unique(rm_data_cont$token_decoded)), " = worst"))
 
 # figure for supplement
 rank_results %>%
@@ -105,11 +105,11 @@ rank_results %>%
   geom_beeswarm(alpha = .1, size=.5) +
   stat_summary(fun = mean, geom = "point", shape = 18, size = 2, color = "black") +
   stat_summary(fun = mean, aes(group=(Category)), size = .1, linetype="dotted", geom = "line", color="black") +
-  stat_summary(fun.data = mean_sd,  geom = "errorbar",size=.5,width = .1, color = "black") + 
+  stat_summary(fun.data = mean_sd,  geom = "errorbar",size=.5,width = .1, color = "black") +
   scale_color_manual(values = base_model_colors) +
   theme(legend.position = "none") +
   scale_y_reverse() +
-  facet_grid(~prompt_framing~Category,scales="free") + 
+  facet_grid(~prompt_framing~Category,scales="free") +
   theme_minimal() +
   theme(panel.border = element_rect(color = "black", fill = NA, linewidth = .5),
         strip.text = element_text(color = "black", margin = margin(10, 5, 10, 5)),  # Fixed this line
@@ -118,13 +118,13 @@ rank_results %>%
         panel.grid = element_blank(),
         legend.position = "none",
         text = element_text(family = "Times New Roman")) +
-  labs(x = "", y = paste0("Median rank (Big 2) \n #0 = best, #", length(unique(rm_data_cont$token_decoded)), " = worst")) 
+  labs(x = "", y = paste0("Median rank (Big 2) \n #0 = best, #", length(unique(rm_data_cont$token_decoded)), " = worst"))
 
 
 
 #### MFD analysis ####
 rm_data = list.files("rm og/dict_MFD_20", pattern = "\\.csv$", full.names = TRUE) %>%
-  map_dfr(~read.csv(.x) %>% 
+  map_dfr(~read.csv(.x) %>%
             mutate(model_name = str_remove(tools::file_path_sans_ext(basename(.x)), "^MFD20_rewards_"))) %>%
   mutate(model_name =str_remove(model_name,"big2_rewards_")) %>%
   mutate(model_id=case_when(model_name=="Ray2333_GRM-gemma2-2B-rewardmodel-ft" ~ "R-Gem-2B",
@@ -162,29 +162,29 @@ rm_data_MFD_20 = rm_data %>%
   distinct() %>%   # keep one row per token
   group_by(model_id, prompt) %>%
   mutate(MFD_category = sub("_.*", "", MFD_category)) %>%
-  mutate(rank = rank(-score)) 
+  mutate(rank = rank(-score))
 
 rank_results = rm_data_MFD_20 %>%
   mutate(base_model = if_else(grepl("Gem", model_id), "Gemma", "Llama")) %>%
   filter(!is.na(value)) %>%
   group_by(model_id, prompt, MFD_category, prompt_framing, base_model) %>% # MFD_type
-  summarise(sum_value = median(rank)) 
+  summarise(sum_value = median(rank))
 
 # plot for main text
 rank_results %>%
   ggplot(aes(x = base_model, y = sum_value, color = base_model)) +
   geom_violin() +
   geom_point(alpha = .25, aes(y= sum_value, group=model_id, color=base_model), data = rank_results %>%
-               group_by(model_id, base_model,prompt_framing,MFD_category)%>% summarize(sum_value = mean(sum_value))) + 
+               group_by(model_id, base_model,prompt_framing,MFD_category)%>% summarize(sum_value = mean(sum_value))) +
   geom_errorbar(alpha = .25, width = .1, aes(y= sum_value, ymax = sum_value+se, ymin=sum_value-se, group=model_id, color=base_model), data = rank_results %>%
-                  group_by(model_id, base_model,prompt_framing,MFD_category)%>% summarize(se = sd(sum_value)/sqrt(n()), sum_value = mean(sum_value))) + 
+                  group_by(model_id, base_model,prompt_framing,MFD_category)%>% summarize(se = sd(sum_value)/sqrt(n()), sum_value = mean(sum_value))) +
   stat_summary(fun = mean, geom = "point", shape = 18, size = 2, color = "black") +
   stat_summary(fun = mean, aes(group=(MFD_category)), size = .1, linetype="dotted", geom = "line", color="black") +
-  stat_summary(fun.data = mean_se,  geom = "errorbar",size=.5,width = .2, color = "black") + 
+  stat_summary(fun.data = mean_se,  geom = "errorbar",size=.5,width = .2, color = "black") +
   scale_color_manual(values = base_model_colors) +
   theme(legend.position = "none") +
   scale_y_reverse() +
-  facet_grid(~prompt_framing~MFD_category,scales="free") + 
+  facet_grid(~prompt_framing~MFD_category,scales="free") +
   theme_minimal() +
   theme(panel.border = element_rect(color = "black", fill = NA, linewidth = .5),
         strip.text = element_text(color = "black", margin = margin(10, 5, 10, 5)),  # Fixed this line
@@ -193,7 +193,7 @@ rank_results %>%
         panel.grid = element_blank(),
         legend.position = "none",
         text = element_text(family = "Times New Roman")) +
-  labs(x = "", y = paste0("Median rank (MFD-2) \n #0 = best, #", length(unique(rm_data_MFD_20$token_decoded)), " = worst")) 
+  labs(x = "", y = paste0("Median rank (MFD-2) \n #0 = best, #", length(unique(rm_data_MFD_20$token_decoded)), " = worst"))
 
 # stats in main text
 summary(lme(sum_value ~ base_model*MFD_category*prompt_framing, random = ~1|model_id, data = rank_results))
@@ -205,7 +205,7 @@ rank_results %>%
   geom_beeswarm(alpha = .1, size=.5) +
   stat_summary(fun = mean, geom = "point", shape = 18, size = 2, color = "black") +
   stat_summary(fun = mean, aes(group=(MFD_category)), size = .1, linetype="dotted", geom = "line", color="black") +
-  stat_summary(fun.data = mean_sd,  geom = "errorbar",size=.5,width = .2, color = "black") + 
+  stat_summary(fun.data = mean_sd,  geom = "errorbar",size=.5,width = .2, color = "black") +
   scale_color_manual(values = base_model_colors) +
   theme(legend.position = "none") +
   scale_y_reverse() +
@@ -217,6 +217,6 @@ rank_results %>%
         axis.text.x = element_text(angle = 0),
         panel.grid = element_blank(),
         legend.position = "none") +
-  labs(x = "", y = paste0("Median rank (MFD-2) \n #0 = best, #", length(unique(rm_data_MFD_20$token_decoded)), " = worst")) 
+  labs(x = "", y = paste0("Median rank (MFD-2) \n #0 = best, #", length(unique(rm_data_MFD_20$token_decoded)), " = worst"))
 
 
