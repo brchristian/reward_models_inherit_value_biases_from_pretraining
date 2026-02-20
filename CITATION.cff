@@ -1,0 +1,37 @@
+cff-version: 1.2.0
+message: "If you use this code or data, please cite the following paper."
+title: "Reward Models Inherit Value Biases from Pretraining"
+type: article
+authors:
+  - family-names: Christian
+    given-names: Brian
+  - family-names: Thompson
+    given-names: Jessica A F
+  - given-names: Elle
+  - family-names: Adam
+    given-names: Vincent
+  - family-names: Kirk
+    given-names: Hannah Rose
+  - family-names: Summerfield
+    given-names: Christopher
+  - family-names: Dumbalska
+    given-names: Tsvetomira
+preferred-citation:
+  type: conference-paper
+  title: "Reward Models Inherit Value Biases from Pretraining"
+  authors:
+    - family-names: Christian
+      given-names: Brian
+    - family-names: Thompson
+      given-names: Jessica A F
+    - given-names: Elle
+    - family-names: Adam
+      given-names: Vincent
+    - family-names: Kirk
+      given-names: Hannah Rose
+    - family-names: Summerfield
+      given-names: Christopher
+    - family-names: Dumbalska
+      given-names: Tsvetomira
+  collection-title: "International Conference on Learning Representations (ICLR)"
+  year: 2026
