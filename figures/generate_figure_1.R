@@ -34,7 +34,7 @@ find_clear_y = function(values, axis_min, axis_max, n_candidates = 50) {
 
 
 #### Big Two analysis ####
-rm_data = list.files("rm og/dict_big2_nouns", pattern = "\\.csv$", full.names = TRUE) %>%
+rm_data = list.files("data/reward_model_scores/dict_big2_nouns", pattern = "\\.csv$", full.names = TRUE) %>%
   map_dfr(~read.csv(.x) %>%
             mutate(model_name = str_remove(tools::file_path_sans_ext(basename(.x)), "^big2_rewards_"))) %>%
   mutate(model_id=case_when(model_name=="Ray2333_GRM-gemma2-2B-rewardmodel-ft" ~ "R-Gem-2B",
@@ -61,7 +61,7 @@ rm_data = list.files("rm og/dict_big2_nouns", pattern = "\\.csv$", full.names = 
   ungroup()
 
 # and laoding of dic
-dict_big2 = read.csv("dicxs/dict_big2_nouns.csv")
+dict_big2 = read.csv("data/corpora/dict_big2_nouns.csv")
 
 
 # ranking
@@ -139,7 +139,7 @@ rank_results %>%
         legend.position = "none",
         text = element_text(family = "Times New Roman")) +
   labs(x = "", y = paste0("Median rank (Big Two) \n #1 = best, #", length(unique(rm_data_cont$token_decoded)), " = worst"))
-ggsave("fig1a_big2_main.pdf", width = 6, height = 4)
+ggsave("figures/output/fig1a_big2_main.pdf", width = 6, height = 4)
 
 # figure for supplement
 rank_results %>%
@@ -163,12 +163,12 @@ rank_results %>%
         legend.position = "none",
         text = element_text(family = "Times New Roman")) +
   labs(x = "", y = paste0("Median rank (Big Two) \n #1 = best, #", length(unique(rm_data_cont$token_decoded)), " = worst"))
-ggsave("fig1a_big2_supplement.pdf", width = 6, height = 4)
+ggsave("figures/output/fig1a_big2_supplement.pdf", width = 6, height = 4)
 
 
 
 #### MFD analysis ####
-rm_data = list.files("rm og/dict_MFD_20", pattern = "\\.csv$", full.names = TRUE) %>%
+rm_data = list.files("data/reward_model_scores/dict_MFD_20", pattern = "\\.csv$", full.names = TRUE) %>%
   map_dfr(~read.csv(.x) %>%
             mutate(model_name = str_remove(tools::file_path_sans_ext(basename(.x)), "^MFD20_rewards_"))) %>%
   mutate(model_name =str_remove(model_name,"big2_rewards_")) %>%
@@ -193,7 +193,7 @@ rm_data = list.files("rm og/dict_MFD_20", pattern = "\\.csv$", full.names = TRUE
                                  levels = c("positive","negative")))
 
 # and laoding of dic
-dict_MFD_20 = read_delim("dicxs/moral-foundations-dictionary-20.dicx", delim = ",")
+dict_MFD_20 = read_delim("data/corpora/moral-foundations-dictionary-20.dicx", delim = ",")
 
 # calculate ranks
 rm_data_MFD_20 = rm_data %>%
@@ -258,7 +258,7 @@ rank_results %>%
         legend.position = "none",
         text = element_text(family = "Times New Roman")) +
   labs(x = "", y = paste0("Median rank (MFD2) \n #1 = best, #", length(unique(rm_data_MFD_20$token_decoded)), " = worst"))
-ggsave("fig1b_mfd_main.pdf", width = 10, height = 4)
+ggsave("figures/output/fig1b_mfd_main.pdf", width = 10, height = 4)
 
 # stats in main text
 summary(lme(sum_value ~ base_model*MFD_category*prompt_framing, random = ~1|model_id, data = rank_results))
@@ -284,4 +284,4 @@ rank_results %>%
         panel.grid = element_blank(),
         legend.position = "none") +
   labs(x = "", y = paste0("Median rank (MFD2) \n #1 = best, #", length(unique(rm_data_MFD_20$token_decoded)), " = worst"))
-ggsave("fig1b_mfd_supplement.pdf", width = 10, height = 4)
+ggsave("figures/output/fig1b_mfd_supplement.pdf", width = 10, height = 4)

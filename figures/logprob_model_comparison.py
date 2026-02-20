@@ -54,7 +54,7 @@ os.makedirs('logprobs/Qwen', exist_ok=True)
 
 
 # big 2 agency communion list
-big2 = pd.read_csv('dict_big2_nouns.csv')
+big2 = pd.read_csv('data/corpora/dict_big2_nouns.csv')
 
 # big2_cap = big2.copy()
 # big2['version'] = 'lowercase'
@@ -346,9 +346,9 @@ ax2.text(1, y_text[1], sig_stars[3], ha='center')
 
 version = 'instruct' if instruct else 'pretrained'
 if include_qwen:
-    plt.savefig(f'big2_logprob_rank_qwen_vs_gemma_vs_llamma_{version}.png', dpi=300, bbox_inches='tight')
+    plt.savefig(f'figures/output/big2_logprob_rank_qwen_vs_gemma_vs_llamma_{version}.png', dpi=300, bbox_inches='tight')
 else:
-    plt.savefig(f'big2_logprob_rank_gemma_vs_llamma_{version}.png', dpi=300, bbox_inches='tight')
+    plt.savefig(f'figures/output/big2_logprob_rank_gemma_vs_llamma_{version}.png', dpi=300, bbox_inches='tight')
 
 
 

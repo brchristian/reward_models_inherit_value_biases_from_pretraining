@@ -12,13 +12,13 @@ base_model_colors = c( "Gemma" = "#DB4437","Llama" = "#0064E0")
 #### rm training ####
 # loading the data
 options(arrow.skip_nul = TRUE)
-llama = read_parquet("rm training/greatest_ever_one_across_checkpoints_llama.parquet")
-gemma = read_parquet("rm training/greatest_ever_one_across_checkpoints_gemma.parquet")
+llama = read_parquet("data/reward_model_training/greatest_ever_one_across_checkpoints_llama.parquet")
+gemma = read_parquet("data/reward_model_training/greatest_ever_one_across_checkpoints_gemma.parquet")
 
 llama$model_id = "meta-llama--Llama-3.2-3B"
 gemma$model_id = "google--gemma-2b-it"
 
-token_intersection = read.csv("token_intersection.csv")
+token_intersection = read.csv("data/corpora/token_intersection.csv")
 
 rm_data = bind_rows(llama, gemma) %>% 
   pivot_longer(cols = starts_with("step-"), names_to = "checkpoint", values_to = "score") %>%
@@ -31,7 +31,7 @@ rm_data = bind_rows(llama, gemma) %>%
                                 grepl("qwe",model_id)~"Qwen"))
 # and laoding of dic
 # expanded
-dict_big2 = read.csv("dicxs/dict_big2_expanded.csv")
+dict_big2 = read.csv("data/corpora/dict_big2_expanded.csv")
 
 
 #####  agency & communion terms ##### 
@@ -75,12 +75,12 @@ rank_results %>%
 #### ablations ####
 
 # read in data
-rank_results_uf_13 = read.csv("rm training/rank_results_uf_13.csv")
-rank_results_uf_27 = read.csv("rm training/rank_results_uf_27.csv")
-rank_results_uf_54 = read.csv("rm training/rank_results_uf_54.csv")
-rank_results_uf_100 = read.csv("rm training/rank_results_uf_100.csv")
-rank_results_sky_80 = read.csv("rm training/rank_results_sky_80k.csv")
-rank_results_grm_80 = read.csv("rm training/rank_results_grm_80k.csv")
+rank_results_uf_13 = read.csv("data/reward_model_training/rank_results_uf_13.csv")
+rank_results_uf_27 = read.csv("data/reward_model_training/rank_results_uf_27.csv")
+rank_results_uf_54 = read.csv("data/reward_model_training/rank_results_uf_54.csv")
+rank_results_uf_100 = read.csv("data/reward_model_training/rank_results_uf_100.csv")
+rank_results_sky_80 = read.csv("data/reward_model_training/rank_results_sky_80k.csv")
+rank_results_grm_80 = read.csv("data/reward_model_training/rank_results_grm_80k.csv")
 
 # label data
 rank_results_uf_13$data_size = 13
