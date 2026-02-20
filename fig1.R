@@ -96,7 +96,7 @@ rank_results %>%
         panel.grid = element_blank(),
         legend.position = "none",
         text = element_text(family = "Times New Roman")) +
-  labs(x = "", y = paste0("Median rank (Big 2) \n #0 = best, #", length(unique(rm_data_cont$token_decoded)), " = worst"))
+  labs(x = "", y = paste0("Median rank (Big Two) \n #1 = best, #", length(unique(rm_data_cont$token_decoded)), " = worst"))
 
 # figure for supplement
 rank_results %>%
@@ -118,7 +118,7 @@ rank_results %>%
         panel.grid = element_blank(),
         legend.position = "none",
         text = element_text(family = "Times New Roman")) +
-  labs(x = "", y = paste0("Median rank (Big 2) \n #0 = best, #", length(unique(rm_data_cont$token_decoded)), " = worst"))
+  labs(x = "", y = paste0("Median rank (Big Two) \n #1 = best, #", length(unique(rm_data_cont$token_decoded)), " = worst"))
 
 
 
@@ -193,7 +193,7 @@ rank_results %>%
         panel.grid = element_blank(),
         legend.position = "none",
         text = element_text(family = "Times New Roman")) +
-  labs(x = "", y = paste0("Median rank (MFD-2) \n #0 = best, #", length(unique(rm_data_MFD_20$token_decoded)), " = worst"))
+  labs(x = "", y = paste0("Median rank (MFD2) \n #1 = best, #", length(unique(rm_data_MFD_20$token_decoded)), " = worst"))
 
 # stats in main text
 summary(lme(sum_value ~ base_model*MFD_category*prompt_framing, random = ~1|model_id, data = rank_results))
@@ -217,6 +217,6 @@ rank_results %>%
         axis.text.x = element_text(angle = 0),
         panel.grid = element_blank(),
         legend.position = "none") +
-  labs(x = "", y = paste0("Median rank (MFD-2) \n #0 = best, #", length(unique(rm_data_MFD_20$token_decoded)), " = worst"))
+  labs(x = "", y = paste0("Median rank (MFD2) \n #1 = best, #", length(unique(rm_data_MFD_20$token_decoded)), " = worst"))
 
 
