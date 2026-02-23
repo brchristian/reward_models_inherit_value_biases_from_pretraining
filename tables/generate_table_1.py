@@ -11,17 +11,19 @@ Usage:
 """
 
 import os
+import sys
+from pathlib import Path
 import numpy as np
 import pandas as pd
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO_ROOT / "scripts"))
+from fetch_logprobs import fetch_missing_logprobs, safe_name
 
 LLAMA_MODEL = "meta-llama/Llama-3.2-3B-Instruct"
 GEMMA_MODEL = "google/gemma-2-2b-it"
 PROMPT_KEY = "greatest_ever_one"
 N_SHOW = 15  # tokens to show on each side
-
-
-def safe_name(model_name):
-    return model_name.replace("/", "--")
 
 
 def escape_latex(s):
@@ -108,9 +110,11 @@ def main():
     repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     logprobs_dir = os.path.join(repo_root, "data", "logprobs")
     output_dir = os.path.join(repo_root, "tables", "output")
+    os.makedirs(logprobs_dir, exist_ok=True)
     os.makedirs(output_dir, exist_ok=True)
 
-    # Load both models
+    # Download logprobs if missing, then load
+    fetch_missing_logprobs([LLAMA_MODEL, GEMMA_MODEL], logprobs_dir)
     print(f"Loading {LLAMA_MODEL}...")
     llama_df = pd.read_csv(
         os.path.join(logprobs_dir, f"{safe_name(LLAMA_MODEL)}.csv"),

@@ -3,6 +3,7 @@ Communion nouns by pretained and instruction-tuned versions of Gemma 2 2B and
 Llama 3.2 3B."""
 
 import os
+import sys
 from pathlib import Path
 import yaml
 from matplotlib import pyplot as plt
@@ -16,14 +17,13 @@ SCRIPT_ROOT = Path(__file__).parent
 REPO_ROOT = SCRIPT_ROOT.parent
 CONFIG_DIR = REPO_ROOT / "config"
 
+sys.path.insert(0, str(REPO_ROOT / "scripts"))
+from fetch_logprobs import fetch_missing_logprobs, safe_name
+
 DEFAULT_PAIRS = [
     ('google/gemma-2-2b', 'meta-llama/Llama-3.2-3B'),
     ('google/gemma-2-2b-it', 'meta-llama/Llama-3.2-3B-Instruct'),
 ]
-
-def safe_name(model_id):
-    """Convert model ID to CSV-safe filename."""
-    return model_id.replace("/", "--")
 
 
 def display_name(model_id, display_names):
@@ -77,8 +77,9 @@ def generate_figure(model1_id, model2_id, prompts, family_map, family_colors, di
     model1_name = display_name(model1_id, display_names)
     model2_name = display_name(model2_id, display_names)
 
-    # Load logprobs CSVs
+    # Download logprobs CSVs if missing, then load
     logprob_dir = REPO_ROOT / "data" / "logprobs"
+    fetch_missing_logprobs([model1_id, model2_id], logprob_dir)
     model1_lp = pd.read_csv(logprob_dir / f"{safe_name(model1_id)}.csv")
     model2_lp = pd.read_csv(logprob_dir / f"{safe_name(model2_id)}.csv")
 
