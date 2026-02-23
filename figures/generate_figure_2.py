@@ -3,13 +3,12 @@ Communion nouns by pretained and instruction-tuned versions of Gemma 2 2B and
 Llama 3.2 3B."""
 
 import os
-import Path
+from pathlib import Path
 import yaml
 from matplotlib import pyplot as plt
 import seaborn as sns
 import pandas as pd
 import argparse
-from transformers import AutoTokenizer
 
 SCRIPT_ROOT = Path(__file__).parent
 REPO_ROOT = SCRIPT_ROOT.parent
@@ -44,53 +43,44 @@ else:
 with open(CONFIG_DIR / "prompts.yaml", "r") as f:
         prompts = yaml.safe_load(f)
 
-# Get list of tokens shared by both tokenizers
-tok_g = AutoTokenizer.from_pretrained(gemma_id)
-tok_l = AutoTokenizer.from_pretrained(llama_id)
-vocab_g = set(tok_g.decode(id) for id in tok_g.vocab.values())
-vocab_l = set(tok_l.decode(id) for id in tok_l.vocab.values())
-shared_tokens = list(vocab_g & vocab_l)
+# Helper to convert model ID to CSV filename
+def safe_name(model_id):
+    return model_id.replace("/", "--")
 
-# Load big 2 agency communion list
-big2 = pd.read_csv('../data/corpora/dict_big2_nouns.csv')
-big2['in_vocab'] = big2.token_decoded.apply(lambda x: x in shared_tokens)
-big2 = big2.query("in_vocab==True")
-
-# Load logprobs for either pretrained or instruction tuned
-repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# Load logprobs CSVs
+logprob_dir = REPO_ROOT / "data" / "logprobs"
 if args.instruct:
-    llama_file = os.path.join(repo_root, 'data', 'logprobs', 'meta-llama--Llama-3.2-3B-Instruct.csv')
-    gemma_file = os.path.join(repo_root, 'data', 'logprobs', 'google--gemma-2-2b-it.csv')
+    gemma_file = logprob_dir / f"{safe_name(gemma_id)}.csv"
+    llama_file = logprob_dir / f"{safe_name(llama_id)}.csv"
 else:
-    llama_file = os.path.join(repo_root, 'data', 'logprobs', 'meta-llama--Llama-3.2-3B.csv')
-    gemma_file = os.path.join(repo_root, 'data', 'logprobs', 'google--gemma-2-2b.csv.csv')
-try:
-    gemma_lp = pd.read_csv(gemma_file)
-    llama_lp = pd.read_csv(llama_file)
-except FileNotFoundError:
-    print(f"{gemma_file} or {llama_file} not found.")
-    print("Ensure you run scripts/generate_logrpobs.py first.")
+    gemma_file = logprob_dir / f"{safe_name(gemma_id)}.csv"
+    llama_file = logprob_dir / f"{safe_name(llama_id)}.csv"
+
+gemma_lp = pd.read_csv(gemma_file)
+llama_lp = pd.read_csv(llama_file)
+
+# Load big 2 agency communion list, filter to tokens in both vocabularies
+big2 = pd.read_csv(REPO_ROOT / "data" / "corpora" / "dict_big2_nouns.csv")
+big2 = big2[
+    big2.token_decoded.isin(gemma_lp.token_decoded) &
+    big2.token_decoded.isin(llama_lp.token_decoded)
+]
 
 # For each prompt, get rank of logprob for each token in the big2 list
 def is_good(key):
-    if 'greatest' in key or 'best' in key or 'good' in key:
-        return True
-    else:
-        return False
+    return 'greatest' in key or 'best' in key or 'good' in key
+
 dfs = []
 for key in prompts:
-    for tok, lp in zip([tok_g, tok_l], [gemma_lp, llama_lp]):
-        df = big2.copy()
-        assert (df.token_decoded.apply(lambda x: tok(x)['input_ids']).apply(len) == 2).all()
-        df['tok_idx'] = df.token_decoded.apply(lambda x: tok(x)['input_ids'][-1])
-        df['logprob'] = df.tok_idx.apply(lambda x: lp[f'{key}_lp'][x])
+    for model_name, lp_df in [(gemma_name, gemma_lp), (llama_name, llama_lp)]:
+        df = pd.merge(big2, lp_df[['token_decoded', key]], on='token_decoded', how='inner')
+        df['logprob'] = df[key]
         df['rank'] = df.logprob.rank(method='average', ascending=False)
-        df['model'] = gemma_name
-        df['prompt']= key
+        df['model'] = model_name
+        df['prompt'] = key
         df['valence'] = 'good' if is_good(key) else 'bad'
-        
         dfs.append(df)
-    
+
 big2_all_prompts = pd.concat(dfs)
 
 # Plot
