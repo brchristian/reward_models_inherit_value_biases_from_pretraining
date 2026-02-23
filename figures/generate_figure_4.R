@@ -136,28 +136,100 @@ rank_results %>%
         axis.text.x = element_text(angle = 90, hjust = 1),
         panel.grid = element_blank(),
         legend.position = "none") +
-  labs(x = "Data size", y = paste0("Median rank (Big Two) \n #1 = best, #1365 = worst"))
+  labs(x = "Data Quantity", y = paste0("Median rank (Big Two) \n #1 = best, #1365 = worst"))
 
-# equidistant points on x axis
-rank_results %>%
+# linear BT section, with break in frame before GRM
+bt_sizes <- c(13, 27, 53, 80, 106)
+grm_size <- 632
+gap_center <- max(bt_sizes) + 30
+gap_half   <- 15
+grm_x      <- gap_center + gap_half + 15
+
+# Pre-compute data for bracket positioning
+plot_data_4b <- rank_results %>%
   filter(base_model!="Qwen") %>%
   group_by(data_size,method,data_source) %>%
   filter(checkpoint==max(checkpoint)) %>%
-  ggplot(aes(x = factor(data_size, levels=c("13","27","53","80","106","480")), y = sum_value, color = base_model, shape=data_source)) +
+  ungroup() %>%
+  mutate(x_cont = ifelse(method == "GRM", grm_x, data_size))
+
+# Compute per-facet, per-group data extremes for bracket positioning
+y_span <- diff(range(plot_data_4b$sum_value))
+off1 <- y_span * 0.08   # tick offset from data
+off2 <- y_span * 0.14   # line offset
+off3 <- y_span * 0.17   # label offset
+
+# Max/min y per Category x method group
+extremes <- plot_data_4b %>%
+  mutate(method_group = ifelse(method == "GRM", "GRM", "BT")) %>%
+  group_by(Category, method_group) %>%
+  summarise(ymax = max(sum_value), ymin = min(sum_value), .groups = "drop")
+
+ag_bt  <- extremes %>% filter(Category == "Agency",    method_group == "BT")
+ag_grm <- extremes %>% filter(Category == "Agency",    method_group == "GRM")
+co_bt  <- extremes %>% filter(Category == "Communion", method_group == "BT")
+co_grm <- extremes %>% filter(Category == "Communion", method_group == "GRM")
+
+# Helper to make 3 segments for a bracket (left tick, right tick, horizontal)
+make_bracket <- function(xl, xr, anchor, direction, cat) {
+  # direction: +1 = below (higher y), -1 = above (lower y)
+  tick  <- anchor + direction * off1
+  line  <- anchor + direction * off2
+  data.frame(
+    x    = c(xl, xr, xl),
+    xend = c(xl, xr, xr),
+    y    = c(tick, tick, line),
+    yend = c(line, line, line),
+    Category = cat
+  )
+}
+
+bracket_segs <- bind_rows(
+  make_bracket(min(bt_sizes), max(bt_sizes), ag_bt$ymax,  +1, "Agency"),      # Agency BT below
+  make_bracket(grm_x - 8,    grm_x + 8,    ag_grm$ymax, +1, "Agency"),      # Agency GRM below
+  make_bracket(min(bt_sizes), max(bt_sizes), co_bt$ymin,  -1, "Communion"),   # Communion BT above
+  make_bracket(grm_x - 8,    grm_x + 8,    co_grm$ymax, +1, "Communion")    # Communion GRM below
+)
+
+bracket_labels <- data.frame(
+  x = c(mean(range(bt_sizes)), grm_x, mean(range(bt_sizes)), grm_x),
+  y = c(ag_bt$ymax + off3, ag_grm$ymax + off3, co_bt$ymin - off3, co_grm$ymax + off3),
+  label = c("Vanilla BT", "GRM", "Vanilla BT", "GRM"),
+  Category = c("Agency", "Agency", "Communion", "Communion")
+)
+
+plot_data_4b %>%
+  ggplot(aes(x = x_cont, y = sum_value, color = base_model, shape=data_source)) +
   geom_line(aes(group = data_size), color = "black", linetype="dotted", linewidth = 0.2) +
   geom_point(size = 3) +
+  # Frame with break at gap
+  annotate("segment", x = -Inf, xend = -Inf, y = -Inf, yend = Inf, linewidth = 0.5, lineend = "square") +                  # left
+  annotate("segment", x = Inf,  xend = Inf,  y = -Inf, yend = Inf, linewidth = 0.5, lineend = "square") +                  # right
+  annotate("segment", x = -Inf, xend = gap_center - gap_half, y = -Inf, yend = -Inf, linewidth = 0.5, lineend = "square") + # top-left
+  annotate("segment", x = gap_center + gap_half, xend = Inf,  y = -Inf, yend = -Inf, linewidth = 0.5, lineend = "square") + # top-right
+  annotate("segment", x = -Inf, xend = gap_center - gap_half, y = Inf,  yend = Inf, linewidth = 0.5, lineend = "square") +  # bottom-left
+  annotate("segment", x = gap_center + gap_half, xend = Inf,  y = Inf,  yend = Inf, linewidth = 0.5, lineend = "square") +  # bottom-right
+  annotate("text", x = gap_center, y = Inf, label = "\u00b7\u00b7\u00b7", vjust = 0.5, size = 3, family = "Times New Roman") +
+  # Brackets (per-facet)
+  geom_segment(data = bracket_segs, aes(x = x, xend = xend, y = y, yend = yend),
+               inherit.aes = FALSE, linewidth = 0.3, color = "black") +
+  geom_text(data = bracket_labels, aes(x = x, y = y, label = label),
+            inherit.aes = FALSE, size = 3, family = "Times New Roman", color = "black") +
+  coord_cartesian(clip = "off") +
   scale_y_reverse() +
-  scale_x_discrete(labels= c('13K (BT)', '27K (BT)', '53K (BT)', '80K (BT)', '106K (BT)', '550K (GRM)')) +
+  scale_x_continuous(
+    breaks = c(bt_sizes, grm_x),
+    labels = c(paste0(bt_sizes, "k"), paste0(grm_size, "k"))
+  ) +
   scale_color_manual(values = base_model_colors) +
-  scale_shape_manual(values = c(18, 16, 17)) +
-  scale_size_manual(values = c("skywork" = 3, "uf" = 3, "uf+skywork" = 1.5)) + 
-  facet_grid(~Category) + 
+  scale_shape_manual(values = c("uf" = 16, "skywork" = 17, "uf+skywork" = 18)) +
+  facet_grid(~Category) +
   theme_minimal(base_family = "Times New Roman") +
-  theme(panel.border = element_rect(color = "black", fill = NA, linewidth = .5),
-        strip.text = element_text(color = "black", margin = margin(10, 5, 10, 5)),  # Fixed this line
+  theme(panel.border = element_blank(),
+        strip.text = element_text(color = "black", margin = margin(10, 5, 10, 5)),
         panel.spacing = unit(0.5, "lines"),
-        axis.text.x = element_text(angle = 90, hjust = 1),
         panel.grid = element_blank(),
-        legend.position = "none") +
-  labs(x = "Data size", y = paste0("Median rank (Big Two) \n #1 = best, #1365 = worst"))
-ggsave("figures/output/fig4b_ablations.pdf", width = 6, height = 4)
+        legend.position = "none",
+        plot.margin = margin(5, 5, 25, 5)) +
+  labs(x = NULL, y = paste0("Median rank (Big Two) \n #1 = best, #1365 = worst"))
+ggsave("figures/output/fig4b_ablations.pdf", width = 7, height = 4)
