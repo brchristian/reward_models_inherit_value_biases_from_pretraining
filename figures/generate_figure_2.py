@@ -9,6 +9,8 @@ from matplotlib import pyplot as plt
 import seaborn as sns
 import pandas as pd
 import argparse
+from scipy.stats import ttest_ind
+from statsmodels.stats.multitest import fdrcorrection
 
 SCRIPT_ROOT = Path(__file__).parent
 REPO_ROOT = SCRIPT_ROOT.parent
@@ -28,7 +30,6 @@ if args.instruct:
     qwen_id = 'Qwen/Qwen2.5-3B-Instruct'
     qwen_name = 'Qwen 2.5 3B Instruct'
     y_text = (33, 30)
-    sig_stars = ['***', '***', '***', '***']
 else:
     gemma_id = 'google/gemma-2-2b'
     gemma_name = 'Gemma 2 2B'
@@ -37,8 +38,7 @@ else:
     qwen_id = 'Qwen/Qwen2.5-3B'
     qwen_name = 'Qwen 2.5 3B'
     y_text = (30, 25)
-    sig_stars = ['**', '**', '**', '**']
-    
+
 # Load prompts
 with open(CONFIG_DIR / "prompts.yaml", "r") as f:
         prompts = yaml.safe_load(f)
@@ -82,6 +82,33 @@ for key in prompts:
         dfs.append(df)
 
 big2_all_prompts = pd.concat(dfs)
+
+# Compute median rank per (prompt, Category, model) — the unit of analysis
+medians = big2_all_prompts.groupby(
+    ['prompt', 'Category', 'model', 'valence']
+).median(numeric_only=True).reset_index()
+
+# Posthoc: Welch t-test, Gemma vs Llama within each (Category x valence) cell
+cells = [('Agency', 'good'), ('Communion', 'good'),
+         ('Agency', 'bad'), ('Communion', 'bad')]
+p_values = []
+for cat, val in cells:
+    gemma_ranks = medians.query("Category==@cat & valence==@val & model==@gemma_name")['rank']
+    llama_ranks = medians.query("Category==@cat & valence==@val & model==@llama_name")['rank']
+    _, p = ttest_ind(gemma_ranks, llama_ranks, equal_var=False)
+    p_values.append(p)
+
+_, p_corrected = fdrcorrection(p_values)
+
+def stars(p):
+    if p < .001: return '***'
+    if p < .01:  return '**'
+    if p < .05:  return '*'
+    return 'n.s.'
+
+sig_stars = [stars(p) for p in p_corrected]
+print(f"FDR-corrected p-values: {[f'{p:.5f}' for p in p_corrected]}")
+print(f"Significance: {list(zip([f'{c} {v}' for c, v in cells], sig_stars))}")
 
 # Plot
 sns.set_context('talk')
