@@ -33,6 +33,7 @@ figures/
 ├── generate_figure_1_and_A1.R         Off-the-shelf RM comparison (Big Two & MFD)
 ├── generate_figure_3.py        MWLR lollipop plot (Freedom vs Love)
 ├── generate_figure_4.R         Training checkpoint & ablation analysis
+├── generate_figure_5.py        Token rank changes (first vs final checkpoint)
 ├── logprob_model_comparison.py Base-model log-probability comparison
 └── output/                     Generated PDFs and PNGs
 ```
@@ -130,6 +131,16 @@ Rscript figures/generate_figure_4.R
 Requires the parquet checkpoint data in `data/reward_model_training/`. Produces in `figures/output/`:
 - `fig4a_training_checkpoints.pdf` — Figure 4(a) (median rank over training steps)
 - `fig4b_ablations.pdf` — Figure 4(b) (data source and quantity ablations)
+
+### Figure 5 — Token rank changes (first vs final checkpoint)
+
+```bash
+python figures/generate_figure_5.py
+```
+
+Requires the parquet checkpoint data in `data/reward_model_training/` and the Big Two nouns dictionary in `data/corpora/dict_big2_nouns.csv`. Produces in `figures/output/`:
+- `fig5_llama.pdf` — Top 10 tokens that moved up/down in rank (Llama)
+- `fig5_gemma.pdf` — Top 10 tokens that moved up/down in rank (Gemma)
 
 ## Data Provenance
 
