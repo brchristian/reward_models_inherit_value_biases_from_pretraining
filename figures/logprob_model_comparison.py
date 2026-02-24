@@ -315,7 +315,7 @@ if not include_qwen:
                 hue_order=hue_order,
                 palette=palette, alpha=alpha, legend=False)
 ax1.invert_yaxis()
-ax1.set_ylabel("Median rank \n(positive prompts)")
+ax1.set_ylabel("Median Rank \n(positive prompts)")
 ax1.spines['top'].set_visible(False)
 ax1.spines['right'].set_visible(False)
 ax1.spines['bottom'].set_visible(False)
@@ -336,7 +336,7 @@ if not include_qwen:
 sns.move_legend(g, "upper left", bbox_to_anchor=(0.8, 1.5), title='Model')
 
 ax2.invert_yaxis()
-ax2.set_ylabel("Median rank \n(negative prompts)")
+ax2.set_ylabel("Median Rank \n(negative prompts)")
 ax2.spines['top'].set_visible(False)
 ax2.spines['right'].set_visible(False)
 ax2.set_xlabel('Big2 Category')

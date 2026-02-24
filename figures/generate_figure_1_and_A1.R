@@ -140,7 +140,7 @@ rank_results %>%
         panel.grid = element_blank(),
         legend.position = "none",
         text = element_text(family = "Times New Roman")) +
-  labs(x = "", y = paste0("Median rank (Big Two) \n #1 = best, #", length(unique(rm_data_cont$token_decoded)), " = worst"))
+  labs(x = "", y = paste0("Median Rank (Big Two) \n #1 = best, #", length(unique(rm_data_cont$token_decoded)), " = worst"))
 ggsave("figures/output/fig1a_big2.pdf", width = 6, height = 4)
 
 # figure for supplement
@@ -164,7 +164,7 @@ rank_results %>%
         panel.grid = element_blank(),
         legend.position = "none",
         text = element_text(family = "Times New Roman")) +
-  labs(x = "", y = paste0("Median rank (Big Two) \n #1 = best, #", length(unique(rm_data_cont$token_decoded)), " = worst"))
+  labs(x = "", y = paste0("Median Rank (Big Two) \n #1 = best, #", length(unique(rm_data_cont$token_decoded)), " = worst"))
 ggsave("figures/output/figA1a_big2.pdf", width = 6, height = 4)
 
 
@@ -259,7 +259,7 @@ rank_results %>%
         panel.grid = element_blank(),
         legend.position = "none",
         text = element_text(family = "Times New Roman")) +
-  labs(x = "", y = paste0("Median rank (MFD2) \n #1 = best, #", length(unique(rm_data_MFD_20$token_decoded)), " = worst"))
+  labs(x = "", y = paste0("Median Rank (MFD2) \n #1 = best, #", length(unique(rm_data_MFD_20$token_decoded)), " = worst"))
 ggsave("figures/output/fig1b_mfd.pdf", width = 10, height = 4)
 
 # stats in main text
@@ -285,5 +285,5 @@ rank_results %>%
         axis.text.x = element_text(angle = 0),
         panel.grid = element_blank(),
         legend.position = "none") +
-  labs(x = "", y = paste0("Median rank (MFD2) \n #1 = best, #", length(unique(rm_data_MFD_20$token_decoded)), " = worst"))
+  labs(x = "", y = paste0("Median Rank (MFD2) \n #1 = best, #", length(unique(rm_data_MFD_20$token_decoded)), " = worst"))
 ggsave("figures/output/figA1b_mfd.pdf", width = 10, height = 4)
