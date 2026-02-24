@@ -12,6 +12,8 @@ import pandas as pd
 import argparse
 from scipy.stats import ttest_ind
 from statsmodels.stats.multitest import fdrcorrection
+import statsmodels.api as sm
+from statsmodels.formula.api import ols
 
 SCRIPT_ROOT = Path(__file__).parent
 REPO_ROOT = SCRIPT_ROOT.parent
@@ -108,6 +110,12 @@ def generate_figure(model1_id, model2_id, prompts, family_map, family_colors, di
     medians = big2_all_prompts.groupby(
         ['prompt', 'Category', 'model', 'valence']
     ).median(numeric_only=True).reset_index()
+
+    # 3-way ANOVA (Type II): rank ~ Category * valence * model
+    anova_model = ols('rank ~ C(Category) * C(valence) * C(model)', data=medians).fit()
+    anova_table = sm.stats.anova_lm(anova_model, typ=2)
+    print(f"\n--- 3-way ANOVA: {model1_name} vs {model2_name} ---")
+    print(anova_table)
 
     # Posthoc: Welch t-test, model1 vs model2 within each (Category x valence) cell
     cells = [('Agency', 'good'), ('Communion', 'good'),
