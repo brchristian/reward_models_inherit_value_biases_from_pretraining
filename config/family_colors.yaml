@@ -1,3 +1,4 @@
 # Brand colors for each model family, used across figures.
 gemma: "#DB4437"
 llama: "#0064E0"
+qwen: "#7C3AED"
