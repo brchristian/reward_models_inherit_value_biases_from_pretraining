@@ -134,7 +134,7 @@ def plot_dramatic_rank_change_tokens_big2(
         "Preferred late in training",
         transform=ax.get_yaxis_transform(),
         ha="center", va="center", rotation=90, fontsize=10,
-        color="darkslategray",
+        color="black",
         bbox=dict(boxstyle="round,pad=0.5", facecolor="white", alpha=0.7),
     )
     ax.text(
@@ -142,7 +142,7 @@ def plot_dramatic_rank_change_tokens_big2(
         "Preferred early in training",
         transform=ax.get_yaxis_transform(),
         ha="center", va="center", rotation=90, fontsize=10,
-        color="darkslategray",
+        color="black",
         bbox=dict(boxstyle="round,pad=0.5", facecolor="white", alpha=0.7),
     )
 
