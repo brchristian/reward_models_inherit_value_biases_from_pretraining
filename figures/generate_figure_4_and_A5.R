@@ -115,38 +115,24 @@ ggsave("figures/output/figA5a_training_checkpoints.pdf", width = 6, height = 4)
 
 #### ablations ####
 
-# read in data
-rank_results_uf_13 = read.csv("data/reward_model_training/rank_results_uf_13.csv")
-rank_results_uf_27 = read.csv("data/reward_model_training/rank_results_uf_27.csv")
-rank_results_uf_54 = read.csv("data/reward_model_training/rank_results_uf_54.csv")
-rank_results_uf_100 = read.csv("data/reward_model_training/rank_results_uf_100.csv")
-rank_results_sky_80 = read.csv("data/reward_model_training/rank_results_sky_80k.csv")
-rank_results_grm_80 = read.csv("data/reward_model_training/rank_results_grm_80k.csv")
+# ablation manifest: file, data_size (thousands), data_source, method
+ablations <- list(
+  list(file = "rank_results_uf_13.csv",   data_size = 13,  data_source = "uf",         method = "BT"),
+  list(file = "rank_results_uf_27.csv",   data_size = 27,  data_source = "uf",         method = "BT"),
+  list(file = "rank_results_uf_54.csv",   data_size = 53,  data_source = "uf",         method = "BT"),
+  list(file = "rank_results_uf_100.csv",  data_size = 106, data_source = "uf",         method = "BT"),
+  list(file = "rank_results_sky_80k.csv", data_size = 77,  data_source = "skywork",    method = "BT"),
+  list(file = "rank_results_grm_80k.csv", data_size = 550, data_source = "uf+skywork", method = "GRM")
+)
 
-# label data
-rank_results_uf_13$data_size = 13
-rank_results_uf_27$data_size = 27
-rank_results_uf_54$data_size = 53
-rank_results_uf_100$data_size = 106
-rank_results_sky_80$data_size = 80
-rank_results_grm_80$data_size = 550
-
-rank_results_uf_13$data_source = "uf"
-rank_results_uf_27$data_source = "uf"
-rank_results_uf_54$data_source= "uf"
-rank_results_uf_100$data_source = "uf"
-rank_results_sky_80$data_source = "skywork"
-rank_results_grm_80$data_source = "uf+skywork"
-rank_results_grm_80$checkpoint = 1
-
-rank_results_uf_13$method = "BT"
-rank_results_uf_27$method = "BT"
-rank_results_uf_54$method= "BT"
-rank_results_uf_100$method = "BT"
-rank_results_sky_80$method = "BT"
-rank_results_grm_80$method = "GRM"
-
-rank_results = bind_rows(rank_results_uf_13,rank_results_uf_27,rank_results_uf_54,rank_results_uf_100,rank_results_sky_80,rank_results_grm_80) %>%
+rank_results = bind_rows(lapply(ablations, function(a) {
+  df <- read.csv(file.path("data/reward_model_training", a$file))
+  df$data_size <- a$data_size
+  df$data_source <- a$data_source
+  df$method <- a$method
+  if (a$method == "GRM") df$checkpoint <- 1
+  df
+})) %>%
   mutate(base_model = case_when(grepl("gem",model_id)~"Gemma",
                                 grepl("Gem",model_id)~"Gemma",
                                 grepl("lam",model_id)~"Llama",
@@ -177,7 +163,7 @@ rank_results %>%
   labs(x = "Data Quantity", y = paste0("Median Rank (Big Two) \n #1 = best, #1365 = worst"))
 
 # linear BT section, with break in frame before GRM
-bt_sizes <- c(13, 27, 53, 80, 106)
+bt_sizes <- sort(unique(rank_results$data_size[rank_results$method == "BT"]))
 grm_size <- 632
 gap_center <- max(bt_sizes) + 30
 gap_half   <- 15
@@ -282,8 +268,8 @@ rank_results %>%
   geom_point(size = 3) +
   scale_y_reverse() +
   scale_x_continuous(
-    breaks = c(13, 27, 53, 80, 106),
-    labels = c("13k", "27k", "53k", "80k", "106k")
+    breaks = bt_sizes,
+    labels = paste0(bt_sizes, "k")
   ) +
   scale_color_manual(values = base_model_colors) +
   scale_shape_manual(values = c("uf" = 16, "skywork" = 17)) +
