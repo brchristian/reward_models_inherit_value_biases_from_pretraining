@@ -141,7 +141,7 @@ rank_results %>%
         legend.position = "none",
         text = element_text(family = "Times New Roman"),
         plot.margin = margin(2, 2, 2, 2)) +
-  labs(x = "", y = paste0("Median Rank (Big Two) \n #1 = best, #", length(unique(rm_data_cont$token_decoded)), " = worst"))
+  labs(x = "", y = paste0("Median rank (Big Two) \n #1 = best, #", length(unique(rm_data_cont$token_decoded)), " = worst"))
 ggsave("figures/output/fig1a_big2.pdf", width = 3, height = 3.5)
 
 # figure for supplement
@@ -166,7 +166,7 @@ rank_results %>%
         legend.position = "none",
         text = element_text(family = "Times New Roman"),
         plot.margin = margin(2, 2, 2, 2)) +
-  labs(x = "", y = paste0("Median Rank (Big Two) \n #1 = best, #", length(unique(rm_data_cont$token_decoded)), " = worst"))
+  labs(x = "", y = paste0("Median rank (Big Two) \n #1 = best, #", length(unique(rm_data_cont$token_decoded)), " = worst"))
 ggsave("figures/output/figA1a_big2.pdf", width = 3, height = 3.5)
 
 
@@ -262,7 +262,7 @@ rank_results %>%
         legend.position = "none",
         text = element_text(family = "Times New Roman"),
         plot.margin = margin(2, 2, 2, 2)) +
-  labs(x = "", y = paste0("Median Rank (MFD2) \n #1 = best, #", length(unique(rm_data_MFD_20$token_decoded)), " = worst"))
+  labs(x = "", y = paste0("Median rank (MFD2) \n #1 = best, #", length(unique(rm_data_MFD_20$token_decoded)), " = worst"))
 ggsave("figures/output/fig1b_mfd.pdf", width = 5.5, height = 3.5)
 
 # stats in main text
@@ -289,5 +289,5 @@ rank_results %>%
         panel.grid = element_blank(),
         legend.position = "none",
         plot.margin = margin(2, 2, 2, 2)) +
-  labs(x = "", y = paste0("Median Rank (MFD2) \n #1 = best, #", length(unique(rm_data_MFD_20$token_decoded)), " = worst"))
+  labs(x = "", y = paste0("Median rank (MFD2) \n #1 = best, #", length(unique(rm_data_MFD_20$token_decoded)), " = worst"))
 ggsave("figures/output/figA1b_mfd.pdf", width = 5.5, height = 3.5)

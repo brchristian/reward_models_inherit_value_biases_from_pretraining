@@ -84,7 +84,7 @@ rank_results %>%
         panel.grid = element_blank(),
         legend.position = "none",
         axis.title.x = element_text(margin = margin(t = 8))) +
-  labs(x = "Checkpoint", y = paste0("Median Rank (Big Two) \n #1 = best, #", length(unique(rm_data_cont$token_decoded)), " = worst"))
+  labs(x = "Checkpoint", y = paste0("Median rank (Big Two) \n #1 = best, #", length(unique(rm_data_cont$token_decoded)), " = worst"))
 ggsave("figures/output/fig4a_training_checkpoints.pdf", width = 4, height = 2.65)
 
 # figure A5a — training checkpoints (with Qwen)
@@ -111,7 +111,7 @@ rank_results %>%
         panel.grid = element_blank(),
         legend.position = "none",
         axis.title.x = element_text(margin = margin(t = 8))) +
-  labs(x = "Checkpoint", y = paste0("Median Rank (Big Two) \n #1 = best, #", length(unique(rm_data_cont$token_decoded)), " = worst"))
+  labs(x = "Checkpoint", y = paste0("Median rank (Big Two) \n #1 = best, #", length(unique(rm_data_cont$token_decoded)), " = worst"))
 ggsave("figures/output/figA5a_training_checkpoints.pdf", width = 4, height = 2.65)
 
 
@@ -162,7 +162,7 @@ rank_results %>%
         axis.text.x = element_text(angle = 90, hjust = 1),
         panel.grid = element_blank(),
         legend.position = "none") +
-  labs(x = "Data Quantity", y = paste0("Median Rank (Big Two) \n #1 = best, #1365 = worst"))
+  labs(x = "Data quantity", y = paste0("Median rank (Big Two) \n #1 = best, #1365 = worst"))
 
 # linear BT section, with break in frame before GRM
 bt_sizes <- sort(unique(rank_results$data_size[rank_results$method == "BT"]))
@@ -259,7 +259,7 @@ plot_data_4b %>%
         legend.position = "none",
         plot.margin = margin(5, 5, 10, 5),
         axis.title.x = element_text(margin = margin(t = 8))) +
-  labs(x = "Data Quantity", y = paste0("Median Rank (Big Two) \n #1 = best, #1365 = worst"))
+  labs(x = "Data quantity", y = paste0("Median rank (Big Two) \n #1 = best, #1365 = worst"))
 ggsave("figures/output/fig4b_ablations.pdf", width = 5, height = 2.65)
 
 # figure A5b — ablations (with Qwen, BT only)
@@ -286,5 +286,5 @@ rank_results %>%
         legend.position = "none",
         plot.margin = margin(5, 5, 10, 5),
         axis.title.x = element_text(margin = margin(t = 8))) +
-  labs(x = "Data Quantity", y = paste0("Median Rank (Big Two) \n #1 = best, #1365 = worst"))
+  labs(x = "Data quantity", y = paste0("Median rank (Big Two) \n #1 = best, #1365 = worst"))
 ggsave("figures/output/figA5b_ablations.pdf", width = 5, height = 2.65)

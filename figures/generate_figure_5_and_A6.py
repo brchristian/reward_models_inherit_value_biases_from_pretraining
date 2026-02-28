@@ -146,7 +146,7 @@ def plot_dramatic_rank_change_tokens_big2(
         bbox=dict(boxstyle="round,pad=0.5", facecolor="white", alpha=0.7),
     )
 
-    ax.set_xlabel("Rank Change")
+    ax.set_xlabel("Rank change")
     ax.set_ylabel("")
 
     # Left-justify y-axis labels (monospace, padded)
