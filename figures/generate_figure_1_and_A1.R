@@ -16,7 +16,7 @@ base_model_colors = c("Gemma" = "#DB4437","Llama" = "#0064E0")
 set.seed(42)
 
 p_to_stars = function(p) {
-  case_when(p < 0.001 ~ "***", p < 0.01 ~ "**", p < 0.05 ~ "*", TRUE ~ "ns")
+  case_when(p < 0.001 ~ "***", p < 0.01 ~ "**", p < 0.05 ~ "*", TRUE ~ "n.s.")
 }
 
 # find y-position that is near center but avoids dense violin regions
@@ -136,10 +136,11 @@ rank_results %>%
   theme(panel.border = element_rect(color = "black", fill = NA, linewidth = .5),
         strip.text = element_text(color = "black", margin = margin(10, 5, 10, 5)),  # Fixed this line
         panel.spacing = unit(0.5, "lines"),
-        axis.text.x = element_text(angle = 0),
+        axis.text.x = element_text(angle = 0, size = 7),
         panel.grid = element_blank(),
         legend.position = "none",
-        text = element_text(family = "Times New Roman")) +
+        text = element_text(family = "Times New Roman"),
+        plot.margin = margin(2, 2, 2, 2)) +
   labs(x = "", y = paste0("Median Rank (Big Two) \n #1 = best, #", length(unique(rm_data_cont$token_decoded)), " = worst"))
 ggsave("figures/output/fig1a_big2.pdf", width = 6, height = 4)
 
@@ -255,10 +256,11 @@ rank_results %>%
   theme(panel.border = element_rect(color = "black", fill = NA, linewidth = .5),
         strip.text = element_text(color = "black", margin = margin(10, 5, 10, 5)),  # Fixed this line
         panel.spacing = unit(0.5, "lines"),
-        axis.text.x = element_text(angle = 0),
+        axis.text.x = element_text(angle = 0, size = 7),
         panel.grid = element_blank(),
         legend.position = "none",
-        text = element_text(family = "Times New Roman")) +
+        text = element_text(family = "Times New Roman"),
+        plot.margin = margin(2, 2, 2, 2)) +
   labs(x = "", y = paste0("Median Rank (MFD2) \n #1 = best, #", length(unique(rm_data_MFD_20$token_decoded)), " = worst"))
 ggsave("figures/output/fig1b_mfd.pdf", width = 10, height = 4)
 
