@@ -109,9 +109,10 @@ rank_results %>%
         strip.text = element_text(color = "black", margin = margin(10, 5, 10, 5)),
         panel.spacing = unit(0.5, "lines"),
         panel.grid = element_blank(),
-        legend.position = "none") +
+        legend.position = "none",
+        axis.title.x = element_text(margin = margin(t = 8))) +
   labs(x = "Checkpoint", y = paste0("Median Rank (Big Two) \n #1 = best, #", length(unique(rm_data_cont$token_decoded)), " = worst"))
-ggsave("figures/output/figA5a_training_checkpoints.pdf", width = 6, height = 4)
+ggsave("figures/output/figA5a_training_checkpoints.pdf", width = 4, height = 2.65)
 
 
 #### ablations ####
@@ -282,6 +283,8 @@ rank_results %>%
         strip.text = element_text(color = "black", margin = margin(10, 5, 10, 5)),
         panel.spacing = unit(0.5, "lines"),
         panel.grid = element_blank(),
-        legend.position = "none") +
+        legend.position = "none",
+        plot.margin = margin(5, 5, 10, 5),
+        axis.title.x = element_text(margin = margin(t = 8))) +
   labs(x = "Data Quantity", y = paste0("Median Rank (Big Two) \n #1 = best, #1365 = worst"))
-ggsave("figures/output/figA5b_ablations.pdf", width = 6, height = 4)
+ggsave("figures/output/figA5b_ablations.pdf", width = 5, height = 2.65)
