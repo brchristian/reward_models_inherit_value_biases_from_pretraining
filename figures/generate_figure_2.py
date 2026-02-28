@@ -76,6 +76,8 @@ def stars(p):
 
 def generate_figure(model1_id, model2_id, prompts, family_map, family_colors, display_names):
     """Generate a single figure for a pair of models."""
+    plt.rcParams['font.family'] = 'serif'
+    plt.rcParams['font.serif'] = ['Times New Roman']
     model1_name = display_name(model1_id, display_names)
     model2_name = display_name(model2_id, display_names)
 
@@ -143,7 +145,7 @@ def generate_figure(model1_id, model2_id, prompts, family_map, family_colors, di
     y_text_bad = to_plot_bad['rank'].min() * 0.85
 
     # Plot
-    sns.set_context('talk')
+    sns.set_context('talk', font_scale=1.15)
     palette = get_palette(model1_id, model2_id, family_map, family_colors)
     alpha = 0.7
     hue_order = [model1_name, model2_name]
