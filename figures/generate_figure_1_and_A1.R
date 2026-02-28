@@ -142,7 +142,7 @@ rank_results %>%
         text = element_text(family = "Times New Roman"),
         plot.margin = margin(2, 2, 2, 2)) +
   labs(x = "", y = paste0("Median Rank (Big Two) \n #1 = best, #", length(unique(rm_data_cont$token_decoded)), " = worst"))
-ggsave("figures/output/fig1a_big2.pdf", width = 6, height = 4)
+ggsave("figures/output/fig1a_big2.pdf", width = 3, height = 3.5)
 
 # figure for supplement
 rank_results %>%
@@ -161,12 +161,13 @@ rank_results %>%
   theme(panel.border = element_rect(color = "black", fill = NA, linewidth = .5),
         strip.text = element_text(color = "black", margin = margin(10, 5, 10, 5)),  # Fixed this line
         panel.spacing = unit(0.5, "lines"),
-        axis.text.x = element_text(angle = 0),
+        axis.text.x = element_text(angle = 0, size = 7),
         panel.grid = element_blank(),
         legend.position = "none",
-        text = element_text(family = "Times New Roman")) +
+        text = element_text(family = "Times New Roman"),
+        plot.margin = margin(2, 2, 2, 2)) +
   labs(x = "", y = paste0("Median Rank (Big Two) \n #1 = best, #", length(unique(rm_data_cont$token_decoded)), " = worst"))
-ggsave("figures/output/figA1a_big2.pdf", width = 6, height = 4)
+ggsave("figures/output/figA1a_big2.pdf", width = 3, height = 3.5)
 
 
 
@@ -262,7 +263,7 @@ rank_results %>%
         text = element_text(family = "Times New Roman"),
         plot.margin = margin(2, 2, 2, 2)) +
   labs(x = "", y = paste0("Median Rank (MFD2) \n #1 = best, #", length(unique(rm_data_MFD_20$token_decoded)), " = worst"))
-ggsave("figures/output/fig1b_mfd.pdf", width = 10, height = 4)
+ggsave("figures/output/fig1b_mfd.pdf", width = 5.5, height = 3.5)
 
 # stats in main text
 summary(lme(sum_value ~ base_model*MFD_category*prompt_framing, random = ~1|model_id, data = rank_results))
@@ -284,8 +285,9 @@ rank_results %>%
   theme(panel.border = element_rect(color = "black", fill = NA, linewidth = .5),
         strip.text = element_text(color = "black", margin = margin(10, 5, 10, 5)),  # Fixed this line
         panel.spacing = unit(0.5, "lines"),
-        axis.text.x = element_text(angle = 0),
+        axis.text.x = element_text(angle = 0, size = 7),
         panel.grid = element_blank(),
-        legend.position = "none") +
+        legend.position = "none",
+        plot.margin = margin(2, 2, 2, 2)) +
   labs(x = "", y = paste0("Median Rank (MFD2) \n #1 = best, #", length(unique(rm_data_MFD_20$token_decoded)), " = worst"))
-ggsave("figures/output/figA1b_mfd.pdf", width = 10, height = 4)
+ggsave("figures/output/figA1b_mfd.pdf", width = 5.5, height = 3.5)
