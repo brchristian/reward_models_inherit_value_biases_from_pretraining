@@ -111,6 +111,8 @@ def compute_all_mwlr_comparisons(merged_df, target_tokens=('Freedom', 'Love')):
 
 def create_lollipop_plot(df, output_file, figsize=None):
     """Create simplified lollipop plot (Gemma 2 models only)."""
+    plt.rcParams['font.family'] = 'serif'
+    plt.rcParams['font.serif'] = ['Times New Roman']
     df = df[df['gemma_model'].str.contains('gemma-2-')].copy().reset_index(drop=True)
 
     # Shorten model names
@@ -148,7 +150,7 @@ def create_lollipop_plot(df, output_file, figsize=None):
     # Connecting lines
     for i, (_, row) in enumerate(df.iterrows()):
         ax.plot(
-            [row['love_mwlr'] + 0.05, row['freedom_mwlr'] - 0.05],
+            [row['love_mwlr'] + 0.01, row['freedom_mwlr'] - 0.01],
             [i, i],
             color='gray', linewidth=1.5, alpha=0.5, zorder=1,
         )
@@ -194,7 +196,6 @@ def main():
 
     print("Creating lollipop plot...")
     create_lollipop_plot(results_df, os.path.join(output_dir, 'fig3_lollipop.pdf'))
-    create_lollipop_plot(results_df, os.path.join(output_dir, 'fig3_lollipop.png'))
 
 
 if __name__ == "__main__":
