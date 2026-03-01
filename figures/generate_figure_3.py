@@ -102,7 +102,7 @@ def compute_all_mwlr_comparisons(merged_df, target_tokens=('Freedom', 'Love')):
                 merged_df[gemma_model].values,
             )
             for token in target_tokens:
-                mask = merged_df['token_decoded'] == token
+                mask = merged_df['token_decoded'].str.strip().str.lower() == token.lower()
                 row[f'{token.lower()}_mwlr'] = mwlr_scores[mask].mean() if mask.any() else np.nan
             results.append(row)
 
