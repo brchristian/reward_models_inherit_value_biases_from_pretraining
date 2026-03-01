@@ -167,9 +167,9 @@ rank_results %>%
 # linear BT section, with break in frame before GRM
 bt_sizes <- sort(unique(rank_results$data_size[rank_results$method == "BT"]))
 grm_size <- 632
-gap_center <- max(bt_sizes) + 30
-gap_half   <- 15
-grm_x      <- gap_center + gap_half + 15
+gap_center <- max(bt_sizes) + 15
+gap_half   <- 7.5
+grm_x      <- gap_center + gap_half + 7.5
 
 # Pre-compute data for bracket positioning
 plot_data_4b <- rank_results %>%
@@ -260,7 +260,7 @@ plot_data_4b %>%
         plot.margin = margin(5, 5, 10, 5),
         axis.title.x = element_text(margin = margin(t = 8))) +
   labs(x = "Data quantity", y = paste0("Median rank (Big Two) \n #1 = best, #1365 = worst"))
-ggsave("figures/output/fig4b_ablations.pdf", width = 5, height = 2.65)
+ggsave("figures/output/fig4b_ablations.pdf", width = 5.2, height = 2.65)
 
 # figure A5b — ablations (with Qwen, BT only)
 rank_results %>%
